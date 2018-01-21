@@ -48,35 +48,34 @@ class Data():
 
 gph = tf.Graph()
 with gph.as_default():
-    x = tf.placeholder('float',shape = [None,28,28,1])
-    y_true = tf.placeholder('float',shape = [None,10])
-    y_true_cls = tf.argmax(y_true,axis =1)
+    x = tf.placeholder('float',shape = [None,28,28,1],name = "x")
+    y_true = tf.placeholder('float',shape = [None,10],name = "y_true")
+    y_true_cls = tf.argmax(y_true,axis =1,name = "y_true_cls")
 
-    kern1 = tf.Variable(tf.random_normal(shape = [5,5,1,16],mean = 0.0,stddev=0.01))
-    kern2 = tf.Variable(tf.random_normal(shape = [7,7,16,32],mean = 0.0,stddev=0.01))
+    kern1 = tf.Variable(tf.random_normal(shape = [5,5,1,16],mean = 0.0,stddev=0.01),name = "kern1")
+    kern2 = tf.Variable(tf.random_normal(shape = [7,7,16,32],mean = 0.0,stddev=0.01),name = "kern2")
 
-    conv1 = tf.nn.conv2d(x,kern1,[1,2,2,1],'SAME')
-    conv2 = tf.nn.conv2d(conv1,kern2,[1,2,2,1],'SAME')
+    conv1 = tf.nn.conv2d(x,kern1,[1,2,2,1],'SAME',name = "conv1")
+    conv2 = tf.nn.conv2d(conv1,kern2,[1,2,2,1],'SAME',name = "conv2")
     #shape = [1,7,7,32]
 
     flat_tensor = tf.reshape(conv2,[-1,1568])
 
-    w1 = tf.Variable(tf.random_normal(shape = [1568,128],mean = 0.0,stddev=0.01))
-    w2 = tf.Variable(tf.random_normal(shape = [128,10],mean = 0.0,stddev=0.01))
-    b1 = tf.Variable(tf.constant(0.0,shape = [128]))
-    b2 = tf.Variable(tf.constant(0.0,shape = [10]))
+    w1 = tf.Variable(tf.random_normal(shape = [1568,128],mean = 0.0,stddev=0.01),name = "w1")
+    w2 = tf.Variable(tf.random_normal(shape = [128,10],mean = 0.0,stddev=0.01),name = "w2")
+    b1 = tf.Variable(tf.constant(0.0,shape = [128]),name = "b1")
+    b2 = tf.Variable(tf.constant(0.0,shape = [10]),name = "b2")
 
-
-    fc1 = tf.nn.relu(tf.matmul(flat_tensor,w1)+b1)
+    fc1 = tf.nn.relu(tf.matmul(flat_tensor,w1)+b1,name = "fc1")
     logits = tf.matmul(fc1,w2) + b2
 
-    y_pred = tf.nn.softmax(logits)
-    y_pred_cls = tf.argmax(y_pred,axis = 1)
+    y_pred = tf.nn.softmax(logits,name = "y_pred")
+    y_pred_cls = tf.argmax(y_pred,axis = 1,name = "y_pred_cls")
 
-    correct_pred = tf.equal(y_pred_cls,y_true_cls)
-    accuracy = tf.reduce_mean(tf.cast(correct_pred,tf.float32))
+    correct_pred = tf.equal(y_pred_cls,y_true_cls,name = "correct_pred")
+    accuracy = tf.reduce_mean(tf.cast(correct_pred,tf.float32),name = 'accuracy')
 
-    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = logits,labels=y_true))
+    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = logits,labels=y_true),name = "loss")
     opt = tf.train.AdamOptimizer(1e-4).minimize(loss)
 
     saver = tf.train.Saver(max_to_keep=100)
