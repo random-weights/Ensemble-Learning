@@ -34,40 +34,33 @@ class Data():
         self.y_batch = self.y_data[rand_indices]
 
 
-# def main():
-#     train_data = Data()
-#     train_data.get_xdata("data/x_train.csv")
-#     train_data.get_ydata("data/y_train.csv")
-#     train_data.get_rand_batch(1)
-#     x_batch = train_data.x_batch.reshape(28,28)
-#     y_batch = train_data.y_batch
-#     print(y_batch)
-#     plt.imshow(x_batch,cmap = 'binary')
-#     plt.show()
-# main()
-
 gph = tf.Graph()
 with gph.as_default():
     x = tf.placeholder('float',shape = [None,28,28,1],name = "x")
     y_true = tf.placeholder('float',shape = [None,10],name = "y_true")
     y_true_cls = tf.argmax(y_true,axis =1,name = "y_true_cls")
 
-    kern1 = tf.Variable(tf.random_normal(shape = [5,5,1,16],mean = 0.0,stddev=0.01),name = "kern1")
-    kern2 = tf.Variable(tf.random_normal(shape = [7,7,16,32],mean = 0.0,stddev=0.01),name = "kern2")
+    ls_kern_count = [16,32,128,10]
+    kern_size = [[5,5],[7,7]]
 
-    conv1 = tf.nn.conv2d(x,kern1,[1,2,2,1],'SAME',name = "conv1")
-    conv2 = tf.nn.conv2d(conv1,kern2,[1,2,2,1],'SAME',name = "conv2")
-    #shape = [1,7,7,32]
+    kern_init = tf.random_normal_initializer(mean = 0.0,stddev = 0.01)
+    bias_init = tf.zeros_initializer()
 
-    flat_tensor = tf.reshape(conv2,[-1,1568])
+    conv1 = tf.layers.conv2d(x,filters = ls_kern_count[0],kernel_size=kern_size[0],
+                             strides = [2,2],padding ="same",activation = tf.nn.relu,use_bias = False,
+                             kernel_initializer=kern_init,trainable=True,name = "conv1")
+    conv2 = tf.layers.conv2d(conv1, filters=ls_kern_count[1], kernel_size=kern_size[0],
+                             strides=[2, 2], padding="same", activation=tf.nn.relu, use_bias=False,
+                             kernel_initializer=kern_init, trainable=True,name = "conv2")
 
-    w1 = tf.Variable(tf.random_normal(shape = [1568,128],mean = 0.0,stddev=0.01),name = "w1")
-    w2 = tf.Variable(tf.random_normal(shape = [128,10],mean = 0.0,stddev=0.01),name = "w2")
-    b1 = tf.Variable(tf.constant(0.0,shape = [128]),name = "b1")
-    b2 = tf.Variable(tf.constant(0.0,shape = [10]),name = "b2")
+    flat_tensor = tf.layers.flatten(conv2,name = "flat_tensor")
 
-    fc1 = tf.nn.relu(tf.matmul(flat_tensor,w1)+b1,name = "fc1")
-    logits = tf.matmul(fc1,w2) + b2
+    fc1 = tf.layers.dense(flat_tensor,units = ls_kern_count[2],activation = tf.nn.relu,
+                          use_bias = True,kernel_initializer=kern_init,bias_initializer=bias_init,
+                          trainable=True,name = "fc1")
+    logits = tf.layers.dense(fc1,ls_kern_count[3],activation= None,use_bias = True,
+                             kernel_initializer=kern_init,bias_initializer=bias_init,
+                             trainable=True,name = "logits")
 
     y_pred = tf.nn.softmax(logits,name = "y_pred")
     y_pred_cls = tf.argmax(y_pred,axis = 1,name = "y_pred_cls")
@@ -85,6 +78,7 @@ def get_save_path(net_numb):
     return save_dir+'network'+str(net_numb)
 
 batch_size = 128
+epochs = 1000
 
 with tf.Session(graph=gph) as sess:
     sess.run(tf.global_variables_initializer())
