@@ -1,7 +1,6 @@
 import tensorflow as tf
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 
 class Data():
     def __init__(self):
@@ -78,7 +77,7 @@ def get_save_path(net_numb):
     return save_dir+'network'+str(net_numb)
 
 batch_size = 128
-epochs = 1000
+epochs = 10000
 
 with tf.Session(graph=gph) as sess:
     sess.run(tf.global_variables_initializer())
@@ -90,10 +89,10 @@ with tf.Session(graph=gph) as sess:
     for i in range(5):              # 5 denotes the number of networks in our ensemble
 
         print("\nNetwork: ",str(i))
-        # initializing global varibale for each network
+        # initializing global variabale for each network
         sess.run(tf.global_variables_initializer())
 
-        for epoch in range(10000):  #no. of epochs for each ensemble
+        for epoch in range(epochs):  #no. of epochs for each network in ensemble
             train_data.get_rand_batch(batch_size)
             x_batch = train_data.x_batch
             y_batch = train_data.y_batch
