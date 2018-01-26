@@ -83,6 +83,26 @@ class Data():
         self.y_batch = self.y_data[rand_indices]
 ```
 
+
+```python
+%%capture
+train_data = Data()
+train_data.get_xdata("data/x_train.csv")
+train_data.get_xdata("data/x_train.csv")
+```
+
+
+```python
+img = train_data.x_data[0].reshape(28,28)
+plt.imshow(img,cmap = 'binary')
+plt.axis("off")
+plt.show()
+```
+
+
+![png](output_5_0.png)
+
+
 ### Helper function to plot images and  show the true label, predicted,ensembled label on the bottom
 adapted from Hvass laboratories
 
@@ -132,6 +152,9 @@ def plot_images(images,y_true_cls,y_pred_cls = None,y_ensemb_cls = None):
 ```
 
 ## Now we will define our compuational graph
+
+
+![alt](network.jpg)
 
 Placeholders for input to graph
 
