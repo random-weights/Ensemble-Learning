@@ -1,4 +1,42 @@
 
+#### Traditional flow:
+    1. Build a ANN
+    2. Train it on test set
+    3. Give an image as input and netowrk will predict the output.
+
+#### Ensemble Learning:
+    1. Build a ANN.
+    2. Make mulitple copies of ANN(in this example 5)
+    3. Train each ANN individual of others.
+    4. Give the same image to all copies of ANN and each ann will have its own prediction.
+    
+Suppose say there are n copies of the same network. we end up with n predictions from these n different copies for 1 image. How we make a final decision depends on the value of n.
+
+* If value of n is large, the value which most of the networks predicted is the final output.
+
+* If the value of n is small, we take a mean of these predictions and calcualte argmax to extract the class
+
+eg. for a particlar image from mnist dataset, the output from 5 different networks are:
+
+**[0.1  0.0  0.0  0.1  0.0  0.3  0.0  0.5  0.1  0.0  0.0]** argmax => predicted class = 7
+
+**[0.0  0.1  0.2  0.1  0.0  0.1  0.0  0.5  0.0  0.0  0.0]** argmax => predicted class = 7
+
+**[0.6  0.1  0.0  0.1  0.0  0.2  0.0  0.0  0.0  0.0  0.0]** argmax => predicted class = 0
+
+**[0.1  0.0  0.0  0.1  0.0  0.3  0.0  0.4  0.1  0.0  0.0]** argmax => predicted class = 7
+
+**[0.1  0.0  0.0  0.1  0.0  0.3  0.0  0.5  0.1  0.0  0.0]** argmax => predicted class = 7
+
+the mean of predictions looks like:
+
+**[0.18  0.04  0.08  0.10  0.12  0.12  0.18  0.38  0.06  0.00]** argmax => class = 7
+
+this is how the following example calculates predictions for ensemle network.
+
+Note that ensemble network need not be better than the best perfomring network in our bag of ensembles.
+
+
 
 ```python
 %matplotlib inline
