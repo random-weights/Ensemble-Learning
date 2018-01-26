@@ -154,7 +154,7 @@ def plot_images(images,y_true_cls,y_pred_cls = None,y_ensemb_cls = None):
 ## Now we will define our compuational graph
 
 
-![alt](network.jpg)
+![alt](https://github.com/thubatilakshmi/Ensemble-Learning/blob/master/network.JPG)
 
 Placeholders for input to graph
 
